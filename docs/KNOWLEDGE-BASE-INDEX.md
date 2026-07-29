@@ -98,8 +98,9 @@ All code follows these principles. See [implementation-principles.md](implementa
 | Phase | Tasks | Status | Evidence |
 |-------|-------|--------|----------|
 | **Phase 0: Foundation** | TASK-0.1, TASK-0.2 | Complete | Strict build and 8 tests pass |
-| **Phase 1: Tier 1** | TASK-1.1 to TASK-1.5 | Not started | Next implementation phase |
-| **Phases 2-6** | TASK-2.1 to TASK-6.1 | Not started | Blocked by task dependencies |
+| **Phase 1: Tier 1** | TASK-1.1 to TASK-1.5 | Complete | 32 Tier 1 tests pass |
+| **Phase 2: Tier 2** | TASK-2.1 to TASK-2.5 | Not started | Next implementation phase |
+| **Phases 3-6** | TASK-3.1 to TASK-6.1 | Not started | Blocked by task dependencies |
 
 Phase 0 provides:
 
@@ -111,19 +112,35 @@ Phase 0 provides:
 - Typed CLI parsing, help text, output-format validation, and graceful error scaffolding
 - Required `src/`, `dist/`, `test/`, and `lib/` project structure
 
+Phase 1 provides:
+
+- Immutable deep merging for plain objects and type conflicts
+- Explicit key removal through higher-precedence `null` or `undefined` values
+- Key-based array merging using `id`, `name`, `key`, `uid`, `uuid`, then `_id`
+- YAML file loading from directories and explicit file lists
+- Numeric filename-prefix ordering with alphabetical tie-breaking
+- Ordered layer resolution through `resolveConfig`
+- Starter-pack fixtures and partial/full Tier 1 pipeline coverage
+
 Verification commands:
 
 ```bash
 npm run build -- --strict
 npm test -- --runInBand
+npm run test:tier1
 npm start -- --help
 npm audit --omit=dev
 ```
 
-Phase 0 commits:
+Implementation commits:
 
 - `04f2fdc` - Initialize the TypeScript project scaffold (TASK-0.1)
 - `23a9b7d` - Add the CLI skeleton and tests (TASK-0.2)
+- `f51066c` - Implement deep recursive object merging (TASK-1.1)
+- `ce7286e` - Add key-based array merging (TASK-1.2)
+- `5c6f8c5` - Load and order YAML configuration files (TASK-1.3)
+- `cc8ea72` - Stack ordered configuration layers (TASK-1.4)
+- `9817fd3` - Add the complete Tier 1 fixture suite (TASK-1.5)
 
 See [execution-plan.md](execution-plan.md) for the authoritative task tracker.
 
@@ -131,7 +148,7 @@ See [execution-plan.md](execution-plan.md) for the authoritative task tracker.
 
 | Tier | Feature | Status | Doc |
 |------|---------|--------|-----|
-| **Tier 1** | Stack & override (merge layers) | Required | [design.md §2-3](design.md#2-merge-strategy-deep-recursive-merge) |
+| **Tier 1** | Stack & override (merge layers) | Complete | [design.md §2-3](design.md#2-merge-strategy-deep-recursive-merge) |
 | **Tier 2** | Cross-layer injection (references) | Required | [design.md §4](design.md#4-reference-syntax-jsonpath-like-with-scope-prefixes) |
 | **Tier 3** | Nested structures | Required | [design.md §8](design.md#8-nested-structures-tier-3-recursive-application) |
 
@@ -242,16 +259,23 @@ See [execution-plan.md](execution-plan.md) for detailed timeline.
 
 ## 📋 Module Structure
 
-Current Phase 0 implementation:
+Current Phase 1 implementation:
 
 ```
 src/
-├── index.ts      — Package entry point
-└── cli.ts        — CLI parsing, help, and error scaffold
+├── index.ts       — Package entry point
+├── cli.ts         — CLI parsing, help, and error scaffold
+├── merge.ts       — Deep object and key-based array merging
+├── loader.ts      — YAML loading and precedence ordering
+└── resolver.ts    — Ordered layer orchestration
 
 test/
 ├── project.test.ts
-└── cli.test.ts
+├── cli.test.ts
+├── merge.test.ts
+├── loader.test.ts
+├── resolver.test.ts
+└── fixtures/       — Tier 1 layers and loader cases
 ```
 
 Planned final structure:
@@ -417,7 +441,7 @@ See [implementation-principles.md §Red Flags](implementation-principles.md#red-
 
 ## Last Updated
 
-Updated: 2026-07-28 (Phase 0 complete)
+Updated: 2026-07-28 (Phase 1 / Tier 1 complete)
 
 For latest updates, check git history:
 ```bash

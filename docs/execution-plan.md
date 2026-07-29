@@ -191,7 +191,7 @@ Status Legend:
 ### Wave 3: References
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
-| TASK-2.1 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-1.4 |
+| TASK-2.1 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, ready after Tier 1 completion |
 | TASK-2.2 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-2.1 |
 | TASK-2.3 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-2.2 |
 | TASK-2.4 | 🟥 | 1.5 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-2.3 |
@@ -235,7 +235,7 @@ Status Legend:
 
 | Milestone | Target Date | Blocker | Status |
 |-----------|-------------|---------|--------|
-| **M1: Tier 1 Complete** | End of Day 1/early Day 2 | TASK-1.5 | 🟥 |
+| **M1: Tier 1 Complete** | 2026-07-28 | TASK-1.5 | 🟩 |
 | **M2: Tier 2 Complete** | End of Day 2/early Day 3 | TASK-2.5 | 🟥 |
 | **M3: Tier 3 Complete** | Early Day 3 | TASK-3.1 | 🟥 |
 | **M4: CLI Ready** | Mid Day 3 | TASK-4.3 | 🟥 |
