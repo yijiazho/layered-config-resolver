@@ -182,7 +182,7 @@ Status Legend:
 |------|--------|--------|----------|--------|-------|
 | TASK-1.1 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; deep merge tests pass |
 | TASK-1.2 | 🟩 | 2.5 hrs | Codex | 100% | Completed 2026-07-28; keyed array tests pass |
-| TASK-1.3 | 🟥 | 1.5 hrs | — | 0% | Can start after TASK-0.1 |
+| TASK-1.3 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; YAML loader tests pass |
 | TASK-1.4 | 🟥 | 1.5 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-1.1, 1.2, 1.3 |
 | TASK-1.5 | 🟥 | 1.5 hrs | — | 0% | Blocked by TASK-1.4 |
 

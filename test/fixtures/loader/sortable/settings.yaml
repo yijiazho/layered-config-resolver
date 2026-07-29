@@ -1,0 +1,2 @@
+service:
+  source: settings

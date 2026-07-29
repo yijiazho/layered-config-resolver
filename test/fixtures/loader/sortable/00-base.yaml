@@ -1,0 +1,3 @@
+service:
+  source: base
+  port: 8080
