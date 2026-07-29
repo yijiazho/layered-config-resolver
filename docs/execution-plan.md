@@ -184,7 +184,7 @@ Status Legend:
 | TASK-1.2 | 🟩 | 2.5 hrs | Codex | 100% | Completed 2026-07-28; keyed array tests pass |
 | TASK-1.3 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; YAML loader tests pass |
 | TASK-1.4 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; resolver tests pass |
-| TASK-1.5 | 🟥 | 1.5 hrs | — | 0% | Blocked by TASK-1.4 |
+| TASK-1.5 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; Tier 1 fixtures pass |
 
 ---
 

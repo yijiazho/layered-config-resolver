@@ -1,4 +1,10 @@
+import path from 'node:path';
+
+import { loadConfigFiles } from '../src/loader';
 import { deepMerge, mergeArrays } from '../src/merge';
+import { resolveConfig } from '../src/resolver';
+
+const TIER1_FIXTURE_DIRECTORY = path.join(__dirname, 'fixtures');
 
 describe('deepMerge', () => {
   test('replaces a scalar with the later layer value', () => {
@@ -168,5 +174,130 @@ describe('mergeArrays', () => {
 
     expect(base).toEqual([{ name: 'api', config: { port: 8080 } }]);
     expect(override).toEqual([{ name: 'api', config: { cpu: '1' } }]);
+  });
+});
+
+describe('Tier 1 fixture pipeline', () => {
+  const loaded = loadConfigFiles(TIER1_FIXTURE_DIRECTORY);
+
+  test('loads the starter layers in numeric precedence order', () => {
+    expect(loaded.map((entry) => path.basename(entry.path))).toEqual([
+      '00-pulumi-outputs.yaml',
+      '10-base.yaml',
+      '20-env-prod.yaml',
+    ]);
+  });
+
+  test('merges layer 0 through layer 1 without resolving references', () => {
+    expect(resolveConfig(loaded.slice(0, 2).map((entry) => entry.config))).toEqual({
+      outputs: {
+        database: {
+          endpoint: 'prod-db.internal',
+          port: 5432,
+        },
+      },
+      schema_version: 1.1,
+      tls: {
+        enabled: 'no',
+        auto_renew: 'off',
+      },
+      services: [
+        {
+          name: 'api',
+          port: 8080,
+          config: {
+            base_timeout: 30,
+            read_timeout: '${.base_timeout}',
+            listen_port: '${..port}',
+          },
+        },
+        {
+          name: 'web',
+          port: 8081,
+        },
+      ],
+      db: {
+        host: '${outputs.database.endpoint}',
+        read_host: '${.host}',
+      },
+      routes: [
+        {
+          path: '/api',
+          upstream: 'api',
+        },
+        {
+          upstream: 'web',
+        },
+      ],
+    });
+  });
+
+  test('merges the complete layer 0 through layer 2 stack', () => {
+    const resolved = resolveConfig(loaded.map((entry) => entry.config));
+
+    expect(resolved).toMatchObject({
+      outputs: {
+        database: {
+          endpoint: 'prod-db.internal',
+          port: 5432,
+        },
+      },
+      db: {
+        host: '${outputs.database.endpoint}',
+        read_host: '${.host}',
+        port: '${outputs.database.port}',
+      },
+    });
+    expect(resolved.services).toEqual([
+      {
+        name: 'api',
+        port: 8080,
+        config: {
+          base_timeout: 30,
+          read_timeout: '${.base_timeout}',
+          listen_port: '${..port}',
+        },
+      },
+      {
+        name: 'web',
+        port: 8081,
+        cpu: '2',
+      },
+      {
+        id: 'api',
+        cpu: '1',
+      },
+    ]);
+  });
+
+  test('preserves nested objects while overriding nested scalar values', () => {
+    expect(
+      resolveConfig([
+        { service: { config: { timeout: 30, retries: 2 } } },
+        { service: { config: { timeout: 60 } } },
+      ]),
+    ).toEqual({
+      service: {
+        config: {
+          timeout: 60,
+          retries: 2,
+        },
+      },
+    });
+  });
+
+  test('replaces a fixture-style value when layers change its type', () => {
+    expect(
+      resolveConfig([
+        { tls: { enabled: 'no' } },
+        { tls: { enabled: { managed: true } } },
+      ]),
+    ).toEqual({
+      tls: {
+        enabled: {
+          managed: true,
+        },
+      },
+    });
   });
 });

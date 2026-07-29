@@ -1,0 +1,19 @@
+tls:
+  enabled: no
+  auto_renew: off
+services:
+  - name: api
+    port: 8080
+    config:
+      base_timeout: 30
+      read_timeout: "${.base_timeout}"
+      listen_port: "${..port}"
+  - name: web
+    port: 8081
+db:
+  host: "${outputs.database.endpoint}"
+  read_host: "${.host}"
+routes:
+  - path: /api
+    upstream: api
+  - upstream: web

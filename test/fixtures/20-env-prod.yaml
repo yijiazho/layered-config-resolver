@@ -1,0 +1,7 @@
+services:
+  - id: api
+    cpu: "1"
+  - name: web
+    cpu: "2"
+db:
+  port: "${outputs.database.port}"

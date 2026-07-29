@@ -1,0 +1,5 @@
+outputs:
+  database:
+    endpoint: prod-db.internal
+    port: 5432
+schema_version: 1.10
