@@ -209,7 +209,7 @@ Status Legend:
 ### Wave 5: CLI & Output
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
-| TASK-4.1 | 🟥 | 1.5 hrs | — | 0% | Can start early (after TASK-0.1) |
+| TASK-4.1 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; JSON output tests pass |
 | TASK-4.2 | 🟥 | 1.5 hrs | — | 0% | Can start early (after TASK-0.1) |
 | TASK-4.3 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-4.1 and TASK-4.2 |
 
