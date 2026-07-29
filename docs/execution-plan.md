@@ -172,7 +172,7 @@ Status Legend:
 ### Wave 1: Foundation
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
-| TASK-0.1 | 🟥 | 2 hrs | — | 0% | TypeScript setup |
+| TASK-0.1 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; build and tests pass |
 | TASK-0.2 | 🟥 | 2 hrs | — | 0% | Blocked by TASK-0.1 |
 
 ---
