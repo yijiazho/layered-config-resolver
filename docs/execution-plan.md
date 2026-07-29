@@ -191,7 +191,7 @@ Status Legend:
 ### Wave 3: References
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
-| TASK-2.1 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, ready after Tier 1 completion |
+| TASK-2.1 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; parser tests pass |
 | TASK-2.2 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-2.1 |
 | TASK-2.3 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-2.2 |
 | TASK-2.4 | 🟥 | 1.5 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-2.3 |
