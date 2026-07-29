@@ -100,8 +100,9 @@ All code follows these principles. See [implementation-principles.md](implementa
 | **Phase 0: Foundation** | TASK-0.1, TASK-0.2 | Complete | Strict build and 8 tests pass |
 | **Phase 1: Tier 1** | TASK-1.1 to TASK-1.5 | Complete | 32 Tier 1 tests pass |
 | **Phase 2: Tier 2** | TASK-2.1 to TASK-2.5 | Complete | 36 Tier 2 tests pass |
-| **Phase 3: Tier 3** | TASK-3.1 | Not started | Next implementation phase |
-| **Phases 4-6** | TASK-4.1 to TASK-6.1 | Not started | Planned |
+| **Phase 3: Tier 3** | TASK-3.1 | Complete | 5 deep-nesting tests pass |
+| **Phase 4: CLI & Output** | TASK-4.1 to TASK-4.3 | Not started | Next implementation phase |
+| **Phases 5-6** | TASK-5.1 to TASK-6.1 | Not started | Planned |
 
 Phase 0 provides:
 
@@ -134,6 +135,14 @@ Phase 2 provides:
 - Contextual errors for malformed syntax and missing paths
 - Cross-layer starter-pack verification through `resolveConfig`
 
+Phase 3 verifies:
+
+- Recursive object merging beyond five levels
+- Absolute references from deeply nested objects
+- Current, parent, grandparent, and higher ancestor scopes at depth
+- Key-based arrays nested inside objects and other keyed array items
+- Reference resolution after recursive nested-array merges
+
 Verification commands:
 
 ```bash
@@ -141,6 +150,7 @@ npm run build -- --strict
 npm test -- --runInBand
 npm run test:tier1
 npm run test:tier2
+npm run test:tier3
 npm start -- --help
 npm audit --omit=dev
 ```
@@ -159,6 +169,7 @@ Implementation commits:
 - `9de9903` - Resolve references across the final document (TASK-2.3)
 - `8961fd0` - Integrate post-merge resolution (TASK-2.4)
 - `bbbf3fe` - Verify the complete Tier 2 reference pipeline (TASK-2.5)
+- `6e14553` - Verify recursive nested structures (TASK-3.1)
 
 See [execution-plan.md](execution-plan.md) for the authoritative task tracker.
 
@@ -168,7 +179,7 @@ See [execution-plan.md](execution-plan.md) for the authoritative task tracker.
 |------|---------|--------|-----|
 | **Tier 1** | Stack & override (merge layers) | Complete | [design.md §2-3](design.md#2-merge-strategy-deep-recursive-merge) |
 | **Tier 2** | Cross-layer injection (references) | Complete | [design.md §4](design.md#4-reference-syntax-jsonpath-like-with-scope-prefixes) |
-| **Tier 3** | Nested structures | Required | [design.md §8](design.md#8-nested-structures-tier-3-recursive-application) |
+| **Tier 3** | Nested structures | Complete | [design.md §8](design.md#8-nested-structures-tier-3-recursive-application) |
 
 ### Tasks (20 Total)
 
@@ -277,7 +288,7 @@ See [execution-plan.md](execution-plan.md) for detailed timeline.
 
 ## 📋 Module Structure
 
-Current Phase 2 implementation:
+Current Phase 3 implementation:
 
 ```
 src/
@@ -295,6 +306,7 @@ test/
 ├── loader.test.ts
 ├── resolver.test.ts
 ├── references.test.ts
+├── nested.test.ts
 └── fixtures/       — Tier 1 layers and loader cases
 ```
 
@@ -461,7 +473,7 @@ See [implementation-principles.md §Red Flags](implementation-principles.md#red-
 
 ## Last Updated
 
-Updated: 2026-07-28 (Phase 2 / Tier 2 complete)
+Updated: 2026-07-28 (Phase 3 / Tier 3 complete)
 
 For latest updates, check git history:
 ```bash
