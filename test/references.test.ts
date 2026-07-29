@@ -1,9 +1,13 @@
+import path from 'node:path';
+
+import { loadConfigFiles } from '../src/loader';
 import {
   parseReferences,
   resolveAllReferences,
   resolveReference,
   type Reference,
 } from '../src/references';
+import { resolveConfig } from '../src/resolver';
 
 function reference(syntax: string): Reference {
   const parsed = parseReferences(syntax).references[0];
@@ -284,6 +288,47 @@ describe('resolveAllReferences', () => {
     expect(input).toEqual({
       source: { value: 'resolved' },
       target: '${source}',
+    });
+  });
+});
+
+describe('Tier 2 fixture pipeline', () => {
+  test('resolves absolute, relative, nested, and cross-layer starter references', () => {
+    const fixtureDirectory = path.join(__dirname, 'fixtures');
+    const layers = loadConfigFiles(fixtureDirectory).map((entry) => entry.config);
+
+    expect(resolveConfig(layers)).toMatchObject({
+      outputs: {
+        database: {
+          endpoint: 'prod-db.internal',
+          port: 5432,
+        },
+      },
+      db: {
+        host: 'prod-db.internal',
+        read_host: 'prod-db.internal',
+        port: 5432,
+      },
+      services: [
+        {
+          name: 'api',
+          port: 8080,
+          config: {
+            base_timeout: 30,
+            read_timeout: 30,
+            listen_port: 8080,
+          },
+        },
+        {
+          name: 'web',
+          port: 8081,
+          cpu: '2',
+        },
+        {
+          id: 'api',
+          cpu: '1',
+        },
+      ],
     });
   });
 });

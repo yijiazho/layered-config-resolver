@@ -195,7 +195,7 @@ Status Legend:
 | TASK-2.2 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; scope tests pass |
 | TASK-2.3 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; resolution tests pass |
 | TASK-2.4 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; resolver integration passes |
-| TASK-2.5 | 🟥 | 1.5 hrs | — | 0% | Blocked by TASK-2.4 |
+| TASK-2.5 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; Tier 2 suite passes |
 
 ---
 
@@ -236,7 +236,7 @@ Status Legend:
 | Milestone | Target Date | Blocker | Status |
 |-----------|-------------|---------|--------|
 | **M1: Tier 1 Complete** | 2026-07-28 | TASK-1.5 | 🟩 |
-| **M2: Tier 2 Complete** | End of Day 2/early Day 3 | TASK-2.5 | 🟥 |
+| **M2: Tier 2 Complete** | 2026-07-28 | TASK-2.5 | 🟩 |
 | **M3: Tier 3 Complete** | Early Day 3 | TASK-3.1 | 🟥 |
 | **M4: CLI Ready** | Mid Day 3 | TASK-4.3 | 🟥 |
 | **M5: Full Test Suite** | End of Day 3 | TASK-5.1 | 🟥 |

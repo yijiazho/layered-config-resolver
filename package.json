@@ -15,6 +15,7 @@
     "cli": "npm run build && node dist/cli.js",
     "test": "jest",
     "test:tier1": "jest --runInBand test/merge.test.ts test/loader.test.ts test/resolver.test.ts",
+    "test:tier2": "jest --runInBand test/references.test.ts test/resolver.test.ts",
     "test:watch": "jest --watch"
   },
   "dependencies": {
