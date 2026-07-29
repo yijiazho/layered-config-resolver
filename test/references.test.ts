@@ -1,4 +1,16 @@
-import { parseReferences } from '../src/references';
+import {
+  parseReferences,
+  resolveReference,
+  type Reference,
+} from '../src/references';
+
+function reference(syntax: string): Reference {
+  const parsed = parseReferences(syntax).references[0];
+  if (parsed === undefined) {
+    throw new Error(`Test reference '${syntax}' did not parse.`);
+  }
+  return parsed;
+}
 
 describe('parseReferences', () => {
   test('parses an absolute path from the document root', () => {
@@ -72,4 +84,87 @@ describe('parseReferences', () => {
       expect(() => parseReferences(value)).toThrow(`Malformed reference in '${value}'`);
     },
   );
+});
+
+describe('resolveReference', () => {
+  const config = {
+    outputs: {
+      database: {
+        endpoint: 'prod-db.internal',
+      },
+    },
+    service: {
+      port: 8080,
+      config: {
+        baseTimeout: 30,
+        nested: {
+          value: 'deep',
+        },
+      },
+    },
+    services: [
+      {
+        name: 'api',
+        port: 9090,
+        config: {
+          timeout: 60,
+        },
+      },
+    ],
+  };
+
+  test('resolves an absolute path from the root', () => {
+    expect(
+      resolveReference(reference('${outputs.database.endpoint}'), config, [
+        'service',
+        'config',
+      ]),
+    ).toBe('prod-db.internal');
+  });
+
+  test('resolves a relative path from the current object', () => {
+    expect(
+      resolveReference(reference('${.baseTimeout}'), config, ['service', 'config']),
+    ).toBe(30);
+  });
+
+  test('resolves a parent path one object above the current context', () => {
+    expect(resolveReference(reference('${..port}'), config, ['service', 'config'])).toBe(
+      8080,
+    );
+  });
+
+  test('resolves a grandparent path two objects above the current context', () => {
+    expect(
+      resolveReference(reference('${...port}'), config, [
+        'service',
+        'config',
+        'nested',
+      ]),
+    ).toBe(8080);
+  });
+
+  test('navigates deep paths and array indices', () => {
+    expect(
+      resolveReference(reference('${..port}'), config, ['services', '0', 'config']),
+    ).toBe(9090);
+    expect(
+      resolveReference(reference('${service.config.nested.value}'), config, []),
+    ).toBe('deep');
+  });
+
+  test('reports the missing path and available keys', () => {
+    expect(() =>
+      resolveReference(reference('${service.config.missing}'), config, []),
+    ).toThrow(
+      "Reference '${service.config.missing}' could not resolve path " +
+        "'service.config.missing'. Missing segment 'missing'. Available keys: baseTimeout, nested.",
+    );
+  });
+
+  test('rejects relative scopes that walk above the root', () => {
+    expect(() => resolveReference(reference('${...value}'), config, ['service'])).toThrow(
+      "Reference '${...value}' walks 2 levels above a context only 1 level deep.",
+    );
+  });
 });

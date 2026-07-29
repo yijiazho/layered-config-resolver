@@ -76,3 +76,58 @@ export function parseReferences(value: string): ParsedReferences {
 
   return { text: value, references };
 }
+
+function _targetPath(ref: Reference, contextPath: string[]): string[] {
+  const referenceSegments = ref.path.split('.');
+  if (ref.isAbsolute) {
+    return referenceSegments;
+  }
+
+  const levelsUp = ref.scopePrefix.length - 1;
+  if (levelsUp > contextPath.length) {
+    throw new Error(
+      `Reference '${ref.syntax}' walks ${levelsUp} levels above a context only ` +
+        `${contextPath.length} level${contextPath.length === 1 ? '' : 's'} deep.`,
+    );
+  }
+
+  return [...contextPath.slice(0, contextPath.length - levelsUp), ...referenceSegments];
+}
+
+function _availableKeys(value: unknown): string[] {
+  return value !== null && typeof value === 'object' ? Object.keys(value) : [];
+}
+
+/**
+ * Resolve one parsed reference against a configuration document.
+ *
+ * @param ref - Parsed absolute or relative reference.
+ * @param config - Final merged configuration document.
+ * @param contextPath - Path to the object containing the reference.
+ * @returns The referenced value.
+ * @throws Error when relative scope escapes the root or a path segment is missing.
+ */
+export function resolveReference(
+  ref: Reference,
+  config: unknown,
+  contextPath: string[],
+): unknown {
+  const targetPath = _targetPath(ref, contextPath);
+  let current: unknown = config;
+
+  for (const segment of targetPath) {
+    const canNavigate = current !== null && typeof current === 'object';
+    if (!canNavigate || !Object.prototype.hasOwnProperty.call(current, segment)) {
+      const availableKeys = _availableKeys(current);
+      const available = availableKeys.length === 0 ? '(none)' : availableKeys.join(', ');
+      throw new Error(
+        `Reference '${ref.syntax}' could not resolve path '${targetPath.join('.')}'. ` +
+          `Missing segment '${segment}'. Available keys: ${available}.`,
+      );
+    }
+
+    current = (current as Record<string, unknown>)[segment];
+  }
+
+  return current;
+}
