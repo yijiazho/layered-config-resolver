@@ -3,6 +3,7 @@
  */
 
 import { deepMerge } from './merge';
+import { resolveAllReferences } from './references';
 
 /** A resolved configuration document. */
 export type ResolvedConfig = Record<string, unknown>;
@@ -17,13 +18,13 @@ function _isPlainObject(value: unknown): value is ResolvedConfig {
 }
 
 /**
- * Merge configuration layers from lowest to highest precedence.
+ * Merge configuration layers from lowest to highest precedence without resolving references.
  *
  * @param configs - Ordered plain-object layers; the last layer has highest precedence.
- * @returns A new resolved plain object.
+ * @returns A new merged plain object.
  * @throws Error when a layer is not a plain object.
  */
-export function resolveConfig(configs: unknown[]): ResolvedConfig {
+export function mergeConfigLayers(configs: unknown[]): ResolvedConfig {
   return configs.reduce<ResolvedConfig>((resolved, layer, index) => {
     if (!_isPlainObject(layer)) {
       throw new Error(
@@ -33,4 +34,15 @@ export function resolveConfig(configs: unknown[]): ResolvedConfig {
 
     return deepMerge(resolved, layer) as ResolvedConfig;
   }, {});
+}
+
+/**
+ * Merge configuration layers, then resolve all references against the final merged state.
+ *
+ * @param configs - Ordered plain-object layers; the last layer has highest precedence.
+ * @returns A new, fully resolved plain object.
+ * @throws Error for invalid layers or reference resolution failures.
+ */
+export function resolveConfig(configs: unknown[]): ResolvedConfig {
+  return resolveAllReferences(mergeConfigLayers(configs)) as ResolvedConfig;
 }

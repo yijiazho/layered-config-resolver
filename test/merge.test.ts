@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { loadConfigFiles } from '../src/loader';
 import { deepMerge, mergeArrays } from '../src/merge';
-import { resolveConfig } from '../src/resolver';
+import { mergeConfigLayers, resolveConfig } from '../src/resolver';
 
 const TIER1_FIXTURE_DIRECTORY = path.join(__dirname, 'fixtures');
 
@@ -189,7 +189,7 @@ describe('Tier 1 fixture pipeline', () => {
   });
 
   test('merges layer 0 through layer 1 without resolving references', () => {
-    expect(resolveConfig(loaded.slice(0, 2).map((entry) => entry.config))).toEqual({
+    expect(mergeConfigLayers(loaded.slice(0, 2).map((entry) => entry.config))).toEqual({
       outputs: {
         database: {
           endpoint: 'prod-db.internal',
@@ -233,7 +233,7 @@ describe('Tier 1 fixture pipeline', () => {
   });
 
   test('merges the complete layer 0 through layer 2 stack', () => {
-    const resolved = resolveConfig(loaded.map((entry) => entry.config));
+    const resolved = mergeConfigLayers(loaded.map((entry) => entry.config));
 
     expect(resolved).toMatchObject({
       outputs: {

@@ -92,4 +92,43 @@ describe('resolveConfig', () => {
       { service: { port: 8080 } },
     ]);
   });
+
+  test('resolves references in a single merged layer', () => {
+    expect(
+      resolveConfig([
+        {
+          source: { port: 5432 },
+          target: { port: '${source.port}' },
+        },
+      ]),
+    ).toEqual({
+      source: { port: 5432 },
+      target: { port: 5432 },
+    });
+  });
+
+  test('resolves references across multiple layers', () => {
+    expect(
+      resolveConfig([
+        { outputs: { endpoint: 'prod-db.internal' } },
+        { db: { host: '${outputs.endpoint}' } },
+      ]),
+    ).toEqual({
+      outputs: { endpoint: 'prod-db.internal' },
+      db: { host: 'prod-db.internal' },
+    });
+  });
+
+  test('resolves against the highest-precedence value in the final merge', () => {
+    expect(
+      resolveConfig([
+        { outputs: { endpoint: 'base-db.internal' } },
+        { db: { host: '${outputs.endpoint}' } },
+        { outputs: { endpoint: 'prod-db.internal' } },
+      ]),
+    ).toEqual({
+      outputs: { endpoint: 'prod-db.internal' },
+      db: { host: 'prod-db.internal' },
+    });
+  });
 });
