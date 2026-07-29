@@ -25,7 +25,7 @@ Quick reference for all project documentation and principles.
 | Document | Audience | Purpose |
 |----------|----------|---------|
 | [design.md](design.md) | Everyone | **WHY** — Design decisions & rationales for all 12 design sections |
-| [tasks.md](tasks.md) | Implementers | **WHAT** — 17 detailed, agent-ready tasks with acceptance criteria |
+| [tasks.md](tasks.md) | Implementers | **WHAT** — 20 detailed, agent-ready tasks with acceptance criteria |
 | [execution-plan.md](execution-plan.md) | Project Managers | **WHEN** — Execution order, waves, tracker, milestones, timeline |
 | [implementation-principles.md](implementation-principles.md) | Developers | **RULES** — 10 core principles + code standards + quality checklist |
 
@@ -93,6 +93,40 @@ All code follows these principles. See [implementation-principles.md](implementa
 
 ## 📊 Project Overview
 
+### Current Implementation Status
+
+| Phase | Tasks | Status | Evidence |
+|-------|-------|--------|----------|
+| **Phase 0: Foundation** | TASK-0.1, TASK-0.2 | Complete | Strict build and 8 tests pass |
+| **Phase 1: Tier 1** | TASK-1.1 to TASK-1.5 | Not started | Next implementation phase |
+| **Phases 2-6** | TASK-2.1 to TASK-6.1 | Not started | Blocked by task dependencies |
+
+Phase 0 provides:
+
+- Strict TypeScript compilation targeting ES2020 on Node.js
+- Jest and `ts-jest` test infrastructure
+- YAML runtime dependency through `js-yaml`
+- CLI argument parsing through `minimist`
+- Runnable `npm start` and `npm run cli` entry points
+- Typed CLI parsing, help text, output-format validation, and graceful error scaffolding
+- Required `src/`, `dist/`, `test/`, and `lib/` project structure
+
+Verification commands:
+
+```bash
+npm run build -- --strict
+npm test -- --runInBand
+npm start -- --help
+npm audit --omit=dev
+```
+
+Phase 0 commits:
+
+- `04f2fdc` - Initialize the TypeScript project scaffold (TASK-0.1)
+- `23a9b7d` - Add the CLI skeleton and tests (TASK-0.2)
+
+See [execution-plan.md](execution-plan.md) for the authoritative task tracker.
+
 ### Tiers (Features)
 
 | Tier | Feature | Status | Doc |
@@ -101,7 +135,7 @@ All code follows these principles. See [implementation-principles.md](implementa
 | **Tier 2** | Cross-layer injection (references) | Required | [design.md §4](design.md#4-reference-syntax-jsonpath-like-with-scope-prefixes) |
 | **Tier 3** | Nested structures | Required | [design.md §8](design.md#8-nested-structures-tier-3-recursive-application) |
 
-### Tasks (17 Total)
+### Tasks (20 Total)
 
 | Phase | Count | Focus | Tasks |
 |-------|-------|-------|-------|
@@ -208,6 +242,20 @@ See [execution-plan.md](execution-plan.md) for detailed timeline.
 
 ## 📋 Module Structure
 
+Current Phase 0 implementation:
+
+```
+src/
+├── index.ts      — Package entry point
+└── cli.ts        — CLI parsing, help, and error scaffold
+
+test/
+├── project.test.ts
+└── cli.test.ts
+```
+
+Planned final structure:
+
 ```
 src/
 ├── merge.ts       → Deep merge & key-based array merge
@@ -240,7 +288,7 @@ output.ts ────┘
 
 **Project is complete when:**
 
-- [ ] All 17 tasks complete with acceptance criteria verified
+- [ ] All 20 tasks complete with acceptance criteria verified
 - [ ] Full test suite passes: `npm test`
 - [ ] Builds cleanly: `npm run build -- --strict`
 - [ ] CLI works: `npm start [files...]`
@@ -327,7 +375,7 @@ See [implementation-principles.md §Red Flags](implementation-principles.md#red-
 ├── README.md                          ← Start here (overview & examples)
 ├── docs/
 │   ├── design.md                      ← Design decisions (§1-12)
-│   ├── tasks.md                       ← 17 tasks (TASK-0.1 to TASK-6.1)
+│   ├── tasks.md                       ← 20 tasks (TASK-0.1 to TASK-6.1)
 │   ├── execution-plan.md              ← Timeline, waves, tracker, milestones
 │   ├── implementation-principles.md   ← 10 principles + code standards
 │   ├── SKILL-implementation.md        ← 7-phase implementation workflow
@@ -369,7 +417,7 @@ See [implementation-principles.md §Red Flags](implementation-principles.md#red-
 
 ## Last Updated
 
-Generated: 2026-07-28
+Updated: 2026-07-28 (Phase 0 complete)
 
 For latest updates, check git history:
 ```bash
