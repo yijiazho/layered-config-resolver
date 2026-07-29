@@ -1,4 +1,4 @@
-import { deepMerge } from '../src/merge';
+import { deepMerge, mergeArrays } from '../src/merge';
 
 describe('deepMerge', () => {
   test('replaces a scalar with the later layer value', () => {
@@ -63,5 +63,110 @@ describe('deepMerge', () => {
 
     expect(base).toEqual({ service: { host: 'localhost' } });
     expect(override).toEqual({ service: { port: 8080 } });
+  });
+});
+
+describe('mergeArrays', () => {
+  test('merges matching objects by an identifiable name field', () => {
+    expect(
+      mergeArrays(
+        [{ name: 'api', port: 8080 }],
+        [{ name: 'api', cpu: '1' }],
+      ),
+    ).toEqual([{ name: 'api', port: 8080, cpu: '1' }]);
+  });
+
+  test('uses the documented key-field priority', () => {
+    expect(
+      mergeArrays(
+        [{ id: 'service-1', name: 'old-name', port: 8080 }],
+        [{ id: 'service-1', name: 'new-name', cpu: '1' }],
+      ),
+    ).toEqual([
+      {
+        id: 'service-1',
+        name: 'new-name',
+        port: 8080,
+        cpu: '1',
+      },
+    ]);
+  });
+
+  test('replaces an array entirely when no common key field exists', () => {
+    expect(mergeArrays(['/api', '/health'], ['/v2'])).toEqual(['/v2']);
+  });
+
+  test('keeps matched items in place and appends unmatched items', () => {
+    expect(
+      mergeArrays(
+        [
+          { name: 'api', port: 8080 },
+          { name: 'web', port: 8081 },
+        ],
+        [
+          { name: 'web', cpu: '2' },
+          { name: 'worker', cpu: '1' },
+        ],
+      ),
+    ).toEqual([
+      { name: 'api', port: 8080 },
+      { name: 'web', port: 8081, cpu: '2' },
+      { name: 'worker', cpu: '1' },
+    ]);
+  });
+
+  test('merges nested structures inside matching array items', () => {
+    expect(
+      mergeArrays(
+        [{ name: 'api', config: { timeout: 30, retries: 2 } }],
+        [{ name: 'api', config: { timeout: 60 } }],
+      ),
+    ).toEqual([{ name: 'api', config: { timeout: 60, retries: 2 } }]);
+  });
+
+  test('appends override items that do not contain the selected key', () => {
+    expect(
+      mergeArrays(
+        [{ name: 'api', port: 8080 }],
+        [{ id: 'worker', port: 8082 }],
+      ),
+    ).toEqual([{ id: 'worker', port: 8082 }]);
+
+    expect(
+      mergeArrays(
+        [
+          { name: 'api', port: 8080 },
+          { name: 'web', port: 8081 },
+        ],
+        [
+          { name: 'web', cpu: '2' },
+          { id: 'worker', cpu: '1' },
+        ],
+      ),
+    ).toEqual([
+      { name: 'api', port: 8080 },
+      { name: 'web', port: 8081, cpu: '2' },
+      { id: 'worker', cpu: '1' },
+    ]);
+  });
+
+  test('handles empty base and override arrays', () => {
+    expect(mergeArrays([], [{ name: 'api' }])).toEqual([{ name: 'api' }]);
+    expect(mergeArrays([{ name: 'api' }], [])).toEqual([]);
+    expect(mergeArrays([], [])).toEqual([]);
+  });
+
+  test('returns a deep-cloned result without mutating array inputs', () => {
+    const base = [{ name: 'api', config: { port: 8080 } }];
+    const override = [{ name: 'api', config: { cpu: '1' } }];
+
+    const result = mergeArrays(base, override) as Array<{
+      name: string;
+      config: { port: number; cpu: string };
+    }>;
+    result[0].config.port = 9090;
+
+    expect(base).toEqual([{ name: 'api', config: { port: 8080 } }]);
+    expect(override).toEqual([{ name: 'api', config: { cpu: '1' } }]);
   });
 });
