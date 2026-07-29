@@ -173,7 +173,7 @@ Status Legend:
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
 | TASK-0.1 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; build and tests pass |
-| TASK-0.2 | 🟥 | 2 hrs | — | 0% | Blocked by TASK-0.1 |
+| TASK-0.2 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; CLI scaffold verified |
 
 ---
 
