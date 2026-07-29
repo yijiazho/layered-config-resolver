@@ -219,7 +219,7 @@ Status Legend:
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
 | TASK-5.1 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; integration tests pass |
-| TASK-5.2 | 🟥 | 1.5 hrs | — | 0% | Ready after CLI completion |
+| TASK-5.2 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; README examples verified |
 | TASK-5.3 | 🟥 | 1.5 hrs | — | 0% | Ready after CLI completion |
 
 ---
