@@ -101,8 +101,9 @@ All code follows these principles. See [implementation-principles.md](implementa
 | **Phase 1: Tier 1** | TASK-1.1 to TASK-1.5 | Complete | 32 Tier 1 tests pass |
 | **Phase 2: Tier 2** | TASK-2.1 to TASK-2.5 | Complete | 36 Tier 2 tests pass |
 | **Phase 3: Tier 3** | TASK-3.1 | Complete | 5 deep-nesting tests pass |
-| **Phase 4: CLI & Output** | TASK-4.1 to TASK-4.3 | Not started | Next implementation phase |
-| **Phases 5-6** | TASK-5.1 to TASK-6.1 | Not started | Planned |
+| **Phase 4: CLI & Output** | TASK-4.1 to TASK-4.3 | Complete | 23 output and CLI tests pass |
+| **Phase 5: Testing & Docs** | TASK-5.1 to TASK-5.3 | Not started | Next implementation phase |
+| **Phase 6: Delivery** | TASK-6.1 | In progress | Atomic task commits maintained |
 
 Phase 0 provides:
 
@@ -143,6 +144,16 @@ Phase 3 verifies:
 - Key-based arrays nested inside objects and other keyed array items
 - Reference resolution after recursive nested-array merges
 
+Phase 4 provides:
+
+- Two-space, valid JSON serialization through `toJSON`
+- Readable, round-trippable YAML serialization through `toYAML`
+- Directory or explicitly ordered file-list CLI inputs
+- `--output json|yaml` selection with JSON as the default
+- End-to-end load, merge, reference-resolution, and formatting orchestration
+- Concise missing-file, YAML parsing, and reference-resolution errors
+- Runnable `npm start` and `npm run cli` commands
+
 Verification commands:
 
 ```bash
@@ -170,6 +181,9 @@ Implementation commits:
 - `8961fd0` - Integrate post-merge resolution (TASK-2.4)
 - `bbbf3fe` - Verify the complete Tier 2 reference pipeline (TASK-2.5)
 - `6e14553` - Verify recursive nested structures (TASK-3.1)
+- `9a36d12` - Add pretty-printed JSON output (TASK-4.1)
+- `279accc` - Add round-trippable YAML output (TASK-4.2)
+- `fed3109` - Wire the complete CLI resolver pipeline (TASK-4.3)
 
 See [execution-plan.md](execution-plan.md) for the authoritative task tracker.
 
@@ -288,7 +302,7 @@ See [execution-plan.md](execution-plan.md) for detailed timeline.
 
 ## 📋 Module Structure
 
-Current Phase 3 implementation:
+Current Phase 4 implementation:
 
 ```
 src/
@@ -297,6 +311,7 @@ src/
 ├── merge.ts       — Deep object and key-based array merging
 ├── loader.ts      — YAML loading and precedence ordering
 ├── references.ts  — Reference parsing and post-merge resolution
+├── output.ts      — JSON and YAML serialization
 └── resolver.ts    — Layer merging and reference orchestration
 
 test/
@@ -307,6 +322,7 @@ test/
 ├── resolver.test.ts
 ├── references.test.ts
 ├── nested.test.ts
+├── output.test.ts
 └── fixtures/       — Tier 1 layers and loader cases
 ```
 
@@ -473,7 +489,7 @@ See [implementation-principles.md §Red Flags](implementation-principles.md#red-
 
 ## Last Updated
 
-Updated: 2026-07-28 (Phase 3 / Tier 3 complete)
+Updated: 2026-07-28 (Phase 4 CLI and output complete)
 
 For latest updates, check git history:
 ```bash
