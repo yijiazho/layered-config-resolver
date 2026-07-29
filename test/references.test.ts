@@ -1,5 +1,6 @@
 import {
   parseReferences,
+  resolveAllReferences,
   resolveReference,
   type Reference,
 } from '../src/references';
@@ -166,5 +167,123 @@ describe('resolveReference', () => {
     expect(() => resolveReference(reference('${...value}'), config, ['service'])).toThrow(
       "Reference '${...value}' walks 2 levels above a context only 1 level deep.",
     );
+  });
+});
+
+describe('resolveAllReferences', () => {
+  test('replaces a single whole-value reference with its actual value type', () => {
+    expect(
+      resolveAllReferences({
+        outputs: { database: { port: 5432 } },
+        db: { port: '${outputs.database.port}' },
+      }),
+    ).toEqual({
+      outputs: { database: { port: 5432 } },
+      db: { port: 5432 },
+    });
+  });
+
+  test('interpolates multiple references in one string', () => {
+    expect(
+      resolveAllReferences({
+        connection: {
+          host: 'db.internal',
+          port: 5432,
+          url: 'postgres://${.host}:${.port}/app',
+        },
+      }),
+    ).toEqual({
+      connection: {
+        host: 'db.internal',
+        port: 5432,
+        url: 'postgres://db.internal:5432/app',
+      },
+    });
+  });
+
+  test('resolves references that point to other references', () => {
+    expect(
+      resolveAllReferences({
+        source: 'resolved-value',
+        middle: '${source}',
+        final: '${middle}',
+      }),
+    ).toEqual({
+      source: 'resolved-value',
+      middle: 'resolved-value',
+      final: 'resolved-value',
+    });
+  });
+
+  test('detects and reports a circular reference path', () => {
+    expect(() =>
+      resolveAllReferences({
+        a: '${b}',
+        b: '${c}',
+        c: '${a}',
+      }),
+    ).toThrow('Circular reference detected: a -> b -> c -> a.');
+  });
+
+  test('resolves relative references inside nested array items', () => {
+    expect(
+      resolveAllReferences({
+        services: [
+          {
+            name: 'api',
+            port: 8080,
+            config: {
+              baseTimeout: 30,
+              readTimeout: '${.baseTimeout}',
+              listenPort: '${..port}',
+            },
+          },
+        ],
+      }),
+    ).toEqual({
+      services: [
+        {
+          name: 'api',
+          port: 8080,
+          config: {
+            baseTimeout: 30,
+            readTimeout: 30,
+            listenPort: 8080,
+          },
+        },
+      ],
+    });
+  });
+
+  test('unescapes literal references without resolving them', () => {
+    expect(
+      resolveAllReferences({
+        outputs: { value: 'secret' },
+        literal: '$${outputs.value}',
+        mixed: 'literal=$${outputs.value}; real=${outputs.value}',
+      }),
+    ).toEqual({
+      outputs: { value: 'secret' },
+      literal: '${outputs.value}',
+      mixed: 'literal=${outputs.value}; real=secret',
+    });
+  });
+
+  test('returns a new tree without mutating the input', () => {
+    const input = {
+      source: { value: 'resolved' },
+      target: '${source}',
+    };
+
+    const result = resolveAllReferences(input) as {
+      source: { value: string };
+      target: { value: string };
+    };
+    result.source.value = 'changed';
+
+    expect(input).toEqual({
+      source: { value: 'resolved' },
+      target: '${source}',
+    });
   });
 });

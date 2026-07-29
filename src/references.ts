@@ -16,6 +16,12 @@ export interface ParsedReferences {
   references: Reference[];
 }
 
+interface ReferenceToken {
+  reference: Reference;
+  start: number;
+  end: number;
+}
+
 function _malformed(value: string, reason: string): Error {
   return new Error(`Malformed reference in '${value}': ${reason}`);
 }
@@ -43,15 +49,8 @@ function _parseReferenceSyntax(syntax: string, value: string): Reference {
   };
 }
 
-/**
- * Find unescaped references in a string and parse their scope and path.
- *
- * @param value - String that may contain `${...}` expressions.
- * @returns The original text and all parsed, unescaped references.
- * @throws Error when an unescaped reference is malformed.
- */
-export function parseReferences(value: string): ParsedReferences {
-  const references: Reference[] = [];
+function _scanReferenceTokens(value: string): ReferenceToken[] {
+  const tokens: ReferenceToken[] = [];
 
   for (let index = 0; index < value.length - 1; index += 1) {
     const startsReference = value[index] === '$' && value[index + 1] === '{';
@@ -70,11 +69,29 @@ export function parseReferences(value: string): ParsedReferences {
       throw _malformed(value, `nested opening brace in '${syntax}'.`);
     }
 
-    references.push(_parseReferenceSyntax(syntax, value));
+    tokens.push({
+      reference: _parseReferenceSyntax(syntax, value),
+      start: index,
+      end: closingBrace + 1,
+    });
     index = closingBrace;
   }
 
-  return { text: value, references };
+  return tokens;
+}
+
+/**
+ * Find unescaped references in a string and parse their scope and path.
+ *
+ * @param value - String that may contain `${...}` expressions.
+ * @returns The original text and all parsed, unescaped references.
+ * @throws Error when an unescaped reference is malformed.
+ */
+export function parseReferences(value: string): ParsedReferences {
+  return {
+    text: value,
+    references: _scanReferenceTokens(value).map((token) => token.reference),
+  };
 }
 
 function _targetPath(ref: Reference, contextPath: string[]): string[] {
@@ -130,4 +147,106 @@ export function resolveReference(
   }
 
   return current;
+}
+
+function _readPath(config: unknown, targetPath: string[]): unknown {
+  let current = config;
+  for (const segment of targetPath) {
+    current = (current as Record<string, unknown>)[segment];
+  }
+  return current;
+}
+
+function _pathKey(targetPath: string[]): string {
+  return JSON.stringify(targetPath);
+}
+
+function _pathLabel(targetPath: string[]): string {
+  return targetPath.length === 0 ? '<root>' : targetPath.join('.');
+}
+
+function _unescapeReferences(value: string): string {
+  return value.replace(/\$\$\{/g, '${');
+}
+
+/**
+ * Resolve every reference in a merged configuration tree against its final state.
+ *
+ * @param config - Final merged configuration.
+ * @param parentPath - Optional compatibility parameter; traversal context is managed internally.
+ * @returns A new tree containing resolved values.
+ * @throws Error for missing paths, malformed references, or reference cycles.
+ */
+export function resolveAllReferences(config: unknown, parentPath: string[] = []): unknown {
+  void parentPath;
+  const cache = new Map<string, unknown>();
+  const resolutionStack: Array<{ key: string; label: string }> = [];
+
+  const resolvePath = (targetPath: string[]): unknown => {
+    const key = _pathKey(targetPath);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    const cycleStart = resolutionStack.findIndex((entry) => entry.key === key);
+    if (cycleStart !== -1) {
+      const cycle = [
+        ...resolutionStack.slice(cycleStart).map((entry) => entry.label),
+        _pathLabel(targetPath),
+      ];
+      throw new Error(`Circular reference detected: ${cycle.join(' -> ')}.`);
+    }
+
+    resolutionStack.push({ key, label: _pathLabel(targetPath) });
+    try {
+      const resolved = resolveValue(_readPath(config, targetPath), targetPath);
+      cache.set(key, resolved);
+      return resolved;
+    } finally {
+      resolutionStack.pop();
+    }
+  };
+
+  const resolveString = (value: string, contextPath: string[]): unknown => {
+    const tokens = _scanReferenceTokens(value);
+    if (tokens.length === 0) {
+      return _unescapeReferences(value);
+    }
+
+    const resolveToken = (token: ReferenceToken): unknown => {
+      resolveReference(token.reference, config, contextPath);
+      return resolvePath(_targetPath(token.reference, contextPath));
+    };
+
+    const onlyToken = tokens.length === 1 && tokens[0].start === 0 && tokens[0].end === value.length;
+    if (onlyToken) {
+      return resolveToken(tokens[0]);
+    }
+
+    let result = '';
+    let cursor = 0;
+    for (const token of tokens) {
+      result += _unescapeReferences(value.slice(cursor, token.start));
+      result += String(resolveToken(token));
+      cursor = token.end;
+    }
+    return result + _unescapeReferences(value.slice(cursor));
+  };
+
+  function resolveValue(value: unknown, currentPath: string[]): unknown {
+    if (typeof value === 'string') {
+      return resolveString(value, currentPath.slice(0, -1));
+    }
+    if (Array.isArray(value)) {
+      return value.map((_item, index) => resolvePath([...currentPath, String(index)]));
+    }
+    if (value !== null && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.keys(value).map((key) => [key, resolvePath([...currentPath, key])]),
+      );
+    }
+    return value;
+  }
+
+  return resolveValue(config, []);
 }
