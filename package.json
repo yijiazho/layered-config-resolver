@@ -17,6 +17,7 @@
     "test:tier1": "jest --runInBand test/merge.test.ts test/loader.test.ts test/resolver.test.ts",
     "test:tier2": "jest --runInBand test/references.test.ts test/resolver.test.ts",
     "test:tier3": "jest --runInBand test/nested.test.ts",
+    "test:integration": "jest --runInBand test/integration.test.ts",
     "test:watch": "jest --watch"
   },
   "dependencies": {
