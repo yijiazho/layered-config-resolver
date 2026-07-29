@@ -116,11 +116,7 @@ export function deepMerge(base: unknown, override: unknown): unknown {
       continue;
     }
 
-    const baseValue = base[key];
-    result[key] =
-      _isPlainObject(baseValue) && _isPlainObject(overrideValue)
-        ? deepMerge(baseValue, overrideValue)
-        : _cloneValue(overrideValue);
+    result[key] = deepMerge(base[key], overrideValue);
   }
 
   return result;
