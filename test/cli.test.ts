@@ -1,3 +1,7 @@
+import path from 'node:path';
+
+import { load as loadYaml } from 'js-yaml';
+
 import {
   CliUsageError,
   HELP_TEXT,
@@ -24,7 +28,9 @@ function createIO(): {
   };
 }
 
-describe('CLI skeleton', () => {
+const FIXTURE_DIRECTORY = path.join(__dirname, 'fixtures');
+
+describe('CLI', () => {
   test('parses file inputs and defaults output to JSON', () => {
     expect(parseCliArgs(['00-base.yaml', '10-prod.yaml'])).toEqual({
       files: ['00-base.yaml', '10-prod.yaml'],
@@ -69,13 +75,70 @@ describe('CLI skeleton', () => {
     expect(stderr[0]).toContain('resolver --help');
   });
 
-  test('reports that resolution is intentionally deferred beyond the skeleton', () => {
+  test('resolves a fixture directory and emits JSON by default', () => {
     const { io, stdout, stderr } = createIO();
 
-    expect(runCli(['config/'], io)).toBe(1);
+    expect(runCli([FIXTURE_DIRECTORY], io)).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(JSON.parse(stdout[0])).toMatchObject({
+      db: {
+        host: 'prod-db.internal',
+        read_host: 'prod-db.internal',
+        port: 5432,
+      },
+    });
+  });
+
+  test('accepts an explicit file list and emits YAML', () => {
+    const { io, stdout, stderr } = createIO();
+    const files = [
+      path.join(FIXTURE_DIRECTORY, '00-pulumi-outputs.yaml'),
+      path.join(FIXTURE_DIRECTORY, '10-base.yaml'),
+      path.join(FIXTURE_DIRECTORY, '20-env-prod.yaml'),
+    ];
+
+    expect(runCli([...files, '--output', 'yaml'], io)).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(loadYaml(stdout[0])).toMatchObject({
+      outputs: {
+        database: {
+          endpoint: 'prod-db.internal',
+          port: 5432,
+        },
+      },
+      db: {
+        host: 'prod-db.internal',
+        port: 5432,
+      },
+    });
+  });
+
+  test('reports missing files without a stack trace', () => {
+    const { io, stdout, stderr } = createIO();
+    const missing = path.join(FIXTURE_DIRECTORY, 'missing.yaml');
+
+    expect(runCli([missing], io)).toBe(1);
     expect(stdout).toEqual([]);
-    expect(stderr).toEqual([
-      'Error: Config resolution is not implemented yet. Complete the resolver tasks first.',
-    ]);
+    expect(stderr).toEqual([`Error: Config input '${missing}' does not exist.`]);
+  });
+
+  test('reports YAML parse errors with the source path', () => {
+    const { io, stdout, stderr } = createIO();
+    const invalid = path.join(FIXTURE_DIRECTORY, 'loader', 'invalid.yaml');
+
+    expect(runCli([invalid], io)).toBe(1);
+    expect(stdout).toEqual([]);
+    expect(stderr[0]).toContain(`Error: Failed to parse YAML config '${invalid}':`);
+  });
+
+  test('reports reference resolution errors cleanly', () => {
+    const { io, stdout, stderr } = createIO();
+    const baseOnly = path.join(FIXTURE_DIRECTORY, '10-base.yaml');
+
+    expect(runCli([baseOnly], io)).toBe(1);
+    expect(stdout).toEqual([]);
+    expect(stderr[0]).toContain(
+      "Error: Reference '${outputs.database.endpoint}' could not resolve path",
+    );
   });
 });

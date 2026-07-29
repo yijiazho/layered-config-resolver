@@ -6,7 +6,11 @@
 
 import minimist from 'minimist';
 
-/** Output formats supported by the future resolver pipeline. */
+import { loadConfigFiles } from './loader';
+import { toJSON, toYAML } from './output';
+import { resolveConfig } from './resolver';
+
+/** Output formats supported by the resolver pipeline. */
 export type OutputFormat = 'json' | 'yaml';
 
 /** Parsed command-line options. */
@@ -45,7 +49,8 @@ export class CliUsageError extends Error {
 }
 
 const DEFAULT_IO: CliIO = {
-  writeOut: (message) => process.stdout.write(`${message}\n`),
+  writeOut: (message) =>
+    process.stdout.write(message.endsWith('\n') ? message : `${message}\n`),
   writeError: (message) => process.stderr.write(`${message}\n`),
 };
 
@@ -79,7 +84,7 @@ export function parseCliArgs(args: string[]): CliOptions {
 }
 
 /**
- * Run the CLI skeleton and convert expected errors into concise messages.
+ * Load, resolve, and format configuration inputs, converting errors into concise messages.
  *
  * @param args - Arguments excluding the Node.js executable and script path.
  * @param io - Output streams, injectable for tests.
@@ -98,13 +103,15 @@ export function runCli(args: string[], io: CliIO = DEFAULT_IO): number {
       throw new CliUsageError('Provide at least one YAML file or a directory.');
     }
 
-    io.writeError(
-      'Error: Config resolution is not implemented yet. Complete the resolver tasks first.',
-    );
-    return 1;
+    const input = options.files.length === 1 ? options.files[0] : options.files;
+    const layers = loadConfigFiles(input).map((entry) => entry.config);
+    const resolved = resolveConfig(layers);
+    io.writeOut(options.output === 'json' ? toJSON(resolved) : toYAML(resolved));
+    return 0;
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    io.writeError(`Error: ${message}\nRun 'resolver --help' for usage.`);
+    const help = error instanceof CliUsageError ? "\nRun 'resolver --help' for usage." : '';
+    io.writeError(`Error: ${message}${help}`);
     return 1;
   }
 }

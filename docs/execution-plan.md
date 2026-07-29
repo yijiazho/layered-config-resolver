@@ -211,7 +211,7 @@ Status Legend:
 |------|--------|--------|----------|--------|-------|
 | TASK-4.1 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; JSON output tests pass |
 | TASK-4.2 | 🟩 | 1.5 hrs | Codex | 100% | Completed 2026-07-28; YAML output tests pass |
-| TASK-4.3 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-4.1 and TASK-4.2 |
+| TASK-4.3 | 🟩 | 2 hrs | Codex | 100% | Completed 2026-07-28; CLI pipeline verified |
 
 ---
 
@@ -219,8 +219,8 @@ Status Legend:
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
 | TASK-5.1 | 🟥 | 2 hrs | — | 0% | Ready after Tier 3 completion |
-| TASK-5.2 | 🟥 | 1.5 hrs | — | 0% | Blocked by TASK-4.3 |
-| TASK-5.3 | 🟥 | 1.5 hrs | — | 0% | Blocked by TASK-4.3 |
+| TASK-5.2 | 🟥 | 1.5 hrs | — | 0% | Ready after CLI completion |
+| TASK-5.3 | 🟥 | 1.5 hrs | — | 0% | Ready after CLI completion |
 
 ---
 
@@ -238,7 +238,7 @@ Status Legend:
 | **M1: Tier 1 Complete** | 2026-07-28 | TASK-1.5 | 🟩 |
 | **M2: Tier 2 Complete** | 2026-07-28 | TASK-2.5 | 🟩 |
 | **M3: Tier 3 Complete** | 2026-07-28 | TASK-3.1 | 🟩 |
-| **M4: CLI Ready** | Mid Day 3 | TASK-4.3 | 🟥 |
+| **M4: CLI Ready** | 2026-07-28 | TASK-4.3 | 🟩 |
 | **M5: Full Test Suite** | End of Day 3 | TASK-5.1 | 🟥 |
 | **M6: Documentation Complete** | End of Day 4 | TASK-5.3 | 🟥 |
 | **M7: Ready for Review** | End of Day 4 | TASK-6.1 | 🟥 |
