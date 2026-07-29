@@ -227,7 +227,7 @@ Status Legend:
 ### Wave 7: Finalization
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
-| TASK-6.1 | 🟥 | 1 hr | — | 0% | Ongoing throughout project |
+| TASK-6.1 | 🟩 | 1 hr | Codex | 100% | Completed 2026-07-28; history audited |
 
 ---
 
@@ -239,9 +239,9 @@ Status Legend:
 | **M2: Tier 2 Complete** | 2026-07-28 | TASK-2.5 | 🟩 |
 | **M3: Tier 3 Complete** | 2026-07-28 | TASK-3.1 | 🟩 |
 | **M4: CLI Ready** | 2026-07-28 | TASK-4.3 | 🟩 |
-| **M5: Full Test Suite** | End of Day 3 | TASK-5.1 | 🟥 |
+| **M5: Full Test Suite** | 2026-07-28 | TASK-5.1 | 🟩 |
 | **M6: Documentation Complete** | 2026-07-28 | TASK-5.3 | 🟩 |
-| **M7: Ready for Review** | End of Day 4 | TASK-6.1 | 🟥 |
+| **M7: Ready for Review** | 2026-07-28 | TASK-6.1 | 🟩 |
 
 ---
 

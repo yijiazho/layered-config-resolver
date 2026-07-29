@@ -28,6 +28,7 @@ Quick reference for all project documentation and principles.
 | [tasks.md](tasks.md) | Implementers | **WHAT** — 20 detailed, agent-ready tasks with acceptance criteria |
 | [execution-plan.md](execution-plan.md) | Project Managers | **WHEN** — Execution order, waves, tracker, milestones, timeline |
 | [implementation-principles.md](implementation-principles.md) | Developers | **RULES** — 10 core principles + code standards + quality checklist |
+| [architecture.md](architecture.md) | Developers | **HOW IT FITS** — Modules, data flow, contracts, and extension points |
 
 ### Workflow Guides
 
@@ -102,8 +103,8 @@ All code follows these principles. See [implementation-principles.md](implementa
 | **Phase 2: Tier 2** | TASK-2.1 to TASK-2.5 | Complete | 36 Tier 2 tests pass |
 | **Phase 3: Tier 3** | TASK-3.1 | Complete | 5 deep-nesting tests pass |
 | **Phase 4: CLI & Output** | TASK-4.1 to TASK-4.3 | Complete | 23 output and CLI tests pass |
-| **Phase 5: Testing & Docs** | TASK-5.1 to TASK-5.3 | Not started | Next implementation phase |
-| **Phase 6: Delivery** | TASK-6.1 | In progress | Atomic task commits maintained |
+| **Phase 5: Testing & Docs** | TASK-5.1 to TASK-5.3 | Complete | Integration and documentation verified |
+| **Phase 6: Delivery** | TASK-6.1 | Complete | Final history and quality audit passed |
 
 Phase 0 provides:
 
@@ -154,6 +155,14 @@ Phase 4 provides:
 - Concise missing-file, YAML parsing, and reference-resolution errors
 - Runnable `npm start` and `npm run cli` commands
 
+Phase 5 and delivery provide:
+
+- Exact starter-pack integration coverage with JSON and YAML round trips
+- User installation, CLI, merge, reference, and troubleshooting documentation
+- Architecture, data-flow, contract, and extension-point documentation
+- A complete atomic commit narrative for every implementation phase
+- Final evidence: 92 tests, strict build, clean runtime audit, and no debug residue
+
 Verification commands:
 
 ```bash
@@ -184,6 +193,9 @@ Implementation commits:
 - `9a36d12` - Add pretty-printed JSON output (TASK-4.1)
 - `279accc` - Add round-trippable YAML output (TASK-4.2)
 - `fed3109` - Wire the complete CLI resolver pipeline (TASK-4.3)
+- `ccd8b37` - Verify the complete starter pipeline (TASK-5.1)
+- `778c2cc` - Document installation and usage (TASK-5.2)
+- `4ffeae6` - Document architecture and extension points (TASK-5.3)
 
 See [execution-plan.md](execution-plan.md) for the authoritative task tracker.
 
@@ -302,7 +314,7 @@ See [execution-plan.md](execution-plan.md) for detailed timeline.
 
 ## 📋 Module Structure
 
-Current Phase 4 implementation:
+Completed implementation:
 
 ```
 src/
@@ -323,6 +335,7 @@ test/
 ├── references.test.ts
 ├── nested.test.ts
 ├── output.test.ts
+├── integration.test.ts
 └── fixtures/       — Tier 1 layers and loader cases
 ```
 
@@ -360,16 +373,16 @@ output.ts ────┘
 
 **Project is complete when:**
 
-- [ ] All 20 tasks complete with acceptance criteria verified
-- [ ] Full test suite passes: `npm test`
-- [ ] Builds cleanly: `npm run build -- --strict`
-- [ ] CLI works: `npm start [files...]`
-- [ ] Git history tells development story
-- [ ] README has usage examples
-- [ ] Integration test passes with example files
-- [ ] All code follows the 10 principles
-- [ ] All code matches design.md decisions
-- [ ] No ambiguities remain
+- [x] All 20 tasks complete with acceptance criteria verified
+- [x] Full test suite passes: `npm test`
+- [x] Builds cleanly: `npm run build -- --strict`
+- [x] CLI works: `npm start [files...]`
+- [x] Git history tells development story
+- [x] README has usage examples
+- [x] Integration test passes with example files
+- [x] All code follows the 10 principles
+- [x] All code matches design.md decisions
+- [x] No ambiguities remain
 
 ---
 
@@ -489,7 +502,7 @@ See [implementation-principles.md §Red Flags](implementation-principles.md#red-
 
 ## Last Updated
 
-Updated: 2026-07-28 (Phase 4 CLI and output complete)
+Updated: 2026-07-28 (all phases complete; ready for review)
 
 For latest updates, check git history:
 ```bash
