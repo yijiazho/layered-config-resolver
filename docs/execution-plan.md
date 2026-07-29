@@ -202,7 +202,7 @@ Status Legend:
 ### Wave 4: Nested Structures
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
-| TASK-3.1 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-2.4 |
+| TASK-3.1 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, ready after Tier 2 completion |
 
 ---
 
@@ -211,14 +211,14 @@ Status Legend:
 |------|--------|--------|----------|--------|-------|
 | TASK-4.1 | 🟥 | 1.5 hrs | — | 0% | Can start early (after TASK-0.1) |
 | TASK-4.2 | 🟥 | 1.5 hrs | — | 0% | Can start early (after TASK-0.1) |
-| TASK-4.3 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-2.4, 4.1, 4.2 |
+| TASK-4.3 | 🟥 | 2 hrs | — | 0% | **CRITICAL PATH**, blocked by TASK-4.1 and TASK-4.2 |
 
 ---
 
 ### Wave 6: Testing & Documentation
 | Task | Status | Effort | Assigned | % Done | Notes |
 |------|--------|--------|----------|--------|-------|
-| TASK-5.1 | 🟥 | 2 hrs | — | 0% | Blocked by TASK-2.4 |
+| TASK-5.1 | 🟥 | 2 hrs | — | 0% | Blocked by TASK-3.1 |
 | TASK-5.2 | 🟥 | 1.5 hrs | — | 0% | Blocked by TASK-4.3 |
 | TASK-5.3 | 🟥 | 1.5 hrs | — | 0% | Blocked by TASK-4.3 |
 
